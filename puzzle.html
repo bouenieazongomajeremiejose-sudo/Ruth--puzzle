@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Puzzle – Mondes & Niveaux</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #b3e5fc;
+      text-align: center;
+    }
+
+    h1, h2 {
+      margin: 10px 0;
+    }
+
+    #uiTop {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px;
+      background: rgba(0,0,0,0.1);
+    }
+
+    #timeContainer {
+      width: 90%;
+      height: 14px;
+      background: #ccc;
+      margin: 10px auto;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #timeBar {
+      height: 100%;
+      width: 100%;
+      background: green;
+      transition: width 0.3s linear;
+    }
+
+    #warningText {
+      color: red;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    canvas {
+      border: 3px solid #000;
+      margin-top: 10px;
+      background: #fff;
+      touch-action: none;
+    }
+
+    button {
+      margin: 4px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    #menuMondes {
+      margin: 15px;
+    }
+
+    #scores {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .warning-orange {
+      box-shadow: 0 0 15px orange;
+    }
+
+    .warning-red {
+      box-shadow: 0 0 20px red;
+    }
+
+    .time-pulse {
+      animation: pulse 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 1; }
+      to { opacity: 0.5; }
+    }
+    /* Canvas responsive */
+canvas {
+  width: 90vw;
+  height: 90vw;
+  max-width: 500px;
+  max-height: 500px;
+}
+
+/* Mobile optimisation */
+@media (max-width: 768px) {
+  canvas {
+    width: 95vw;
+    height: 95vw;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+}
+canvas {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}@media (max-width: 768px) {
+  canvas {
+    transform: scale(0.9);
+  }
+} .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.modalContent h2 {
+  text-align: center;
+}
+
+.dark-mode {
+  background: #121212 !important;
+  color: white !important;
+}
+
+.dark-mode canvas {
+  border-color: white;
+}
+
+.dark-mode button {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+}
+/* MOBILE PRO PRECISE */
+@media (max-width: 600px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  #uiTop {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  button {
+    width: 90%;
+    max-width: 300px;
+    font-size: 16px;
+  }
+
+  canvas {
+    width: 92vw;
+    height: 92vw;
+    max-width: 95vw;
+    max-height: 95vw;
+  }
+
+  #scores {
+    font-size: 14px;
+  }
+
+  #timeContainer {
+    height: 10px;
+  }@media (max-width: 480px) {
+  canvas {
+    width: 95vw;
+    height: 95vw;
+    max-width: 400px;
+    max-height: 400px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  #uiTop {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+}
+
+
+
+
+  </style>
+  </head>
+
+     <body>
+
+  <h1>🧩 Puzzle Mondes & Niveaux</h1>
+
+  <!-- UI TOP -->
+  <div id="uiTop">
+    <button id="pauseBtn">⏸ Pause</button>
+    <button id="zenBtn">🧘 Mode Zen</button>
+    <button id="btnAccueil">🏠 Accueil</button>
+  </div>
+       <!-- MODAL OPTIONS / AIDE -->
+<div id="modalOptions" class="modal">
+  <div class="modalContent">
+    <h2>⚙ Options & Aide</h2>
+
+    <p><strong>🎮 Comment jouer :</strong><br>
+    Clique sur deux pièces pour les échanger.<br>
+    Replace toutes les pièces correctement pour gagner.</p>
+
+    <p><strong>🏆 Comment gagner :</strong><br>
+    Reconstitue l’image avant la fin du temps.<br>
+    Plus tu es rapide, plus tu gagnes d’étoiles ⭐</p>
+
+    <hr>
+
+    <label>🔊 Volume :
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.1">
+    </label>
+
+    <br><br>
+    <button id="fermerOptions">❌ Fermer</button>
+  </div>
+</div>
+
+
+  <!-- SCORE -->
+  <div id="scores">
+    <div id="score">Score : 0</div>
+    <div id="bestScore">Meilleur score : 0</div><button id="btnOptions">⚙ Aide O</button><button id="btnInfo">ℹ Infos</button><button id="btnMODE">NOUVEAUX MODE</button>
+
+
+
+  </div>
+
+  <!-- TIMER -->
+  <div id="timeContainer">
+    <div id="timeBar"></div>
+  </div>
+  <div id="warningText">⚠️ Dépêche‑toi !</div>
+
+  <!-- CANVAS -->
+  <canvas id="puzzleCanvas" width="360" height="360"></canvas>
+
+  <!-- MENUS MONDES / NIVEAUX -->
+  <div id="menuMondes"></div>
+
+  <!-- BOUTONS BAS -->
+  <div>
+    <button id="voirEtoiles">⭐ Voir étoiles</button>
+    <button id="resetEtoiles">♻ Reset étoiles</button>
+    <button id="resetBest">🗑 Reset scores</button>
+  </div>
+
+  <!-- CLASSEMENT -->
+  <h2>🏆 Classement</h2>
+  <ul id="leaderboard"></ul>
+
+
+  <!-- TON JS -->
+  <script src="puzzle.js"></script>
+
+  <!-- Lancement menu -->
+  <script>
+    afficherMenuMondes();
+    appliquerDecorMonde(mondeActuel());
+  </script>
+
+
+  </body>
+</html>
